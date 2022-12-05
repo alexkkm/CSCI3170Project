@@ -1,5 +1,11 @@
 select part.pName, 
 part.pAvailableQuantity
 from part, manufacturer, category
-where part.pID = 1  /*change pID*/
-and salesperson.sID = 1  /*change sID*/
+where part.pID = %d  /*change pID*/
+and salesperson.sID = %d  /*change sID*/
+
+
+select part.pName, part.pAvailableQuantity
+from part, manufacturer, category
+where part.pID = %d  /*change pID*/
+and salesperson.sID = %d  /*change sID*/

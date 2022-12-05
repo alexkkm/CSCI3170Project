@@ -296,6 +296,130 @@ public class CSCI3170Project {
 
     // Function for Salesperson
 
+    // Sales1
+    public static void searchParts(Scanner menuAns, Connection mySQLDB) throws SQLException {
+        String ans = null, keyword = null, method = null, ordering = null;
+        String searchSQL = "";
+        PreparedStatement stmt = null;
+
+        searchSQL += "select part.pID, part.pName, manufacturer.mName, category.cName, part.pAvailableQuantity, part.pWarrantyPeriod, part.pPrice";
+        searchSQL += "from part, manufacturer, category";
+        searchSQL += "where part.cID = category.cID and manufacturer.mID = part.mID";
+
+        while (true) {
+            System.out.println("Choose the Search criterion:");
+            System.out.println("1. Part Name");
+            System.out.println("2. Manufacturer Name");
+            System.out.print("Choose the search criterion:");
+            ans = menuAns.nextLine();
+            if (ans.equals("1") || ans.equals("2"))
+                break;
+        }
+        method = ans;
+
+        while (true) {
+            System.out.print("Type in the Search Keyword: ");
+            ans = menuAns.nextLine();
+            if (!ans.isEmpty())
+                break;
+        }
+        keyword = ans;
+
+        while (true) {
+            System.out.println("Choose ordering:");
+            System.out.println("1. By price, ascending order");
+            System.out.println("2. By price, descending order");
+            System.out.print("Choose Ordering:");
+            ans = menuAns.nextLine();
+            if (ans.equals("1") || ans.equals("2"))
+                break;
+        }
+        ordering = ans;
+
+        if (method.equals("1")) {
+            searchSQL += " and part.pName = ? ";
+        } else if (method.equals("2")) {
+            searchSQL += " and manufacturer.mName = ? ";
+        }
+
+        if (ordering.equals("1")) {
+            searchSQL += "ASC";
+        } else if (ordering.equals("2")) {
+            searchSQL += "DESC";
+        }
+
+        stmt = mySQLDB.prepareStatement(searchSQL);
+        stmt.setString(1, keyword);
+
+        String[] field_name = { "ID", "Name", "Manufacturer", "Category", "Quantity", "Warranty", "Price" };
+        for (int i = 0; i < 7; i++) {
+            System.out.print("| " + field_name[i] + " ");
+        }
+        System.out.println("|");
+
+        ResultSet resultSet = stmt.executeQuery();
+        while (resultSet.next()) {
+            for (int i = 1; i <= 7; i++) {
+                System.out.print("| " + resultSet.getString(i) + " ");
+            }
+            System.out.println("|");
+        }
+        System.out.println("End of Query");
+        resultSet.close();
+        stmt.close();
+    }
+
+    // Sales2
+    public static void sellPart(Scanner menuAns, Connection mySQLDB) throws SQLException {
+        String ans = null;
+        String partID = null, salespersonID = null;
+        String searchSQL = "";
+        PreparedStatement stmt = null;
+
+        searchSQL += "select part.pName, part.pAvailableQuantity ";
+        searchSQL += "from part, manufacturer, category, salesperson";
+        searchSQL += "where part.pID = ? ";
+        searchSQL += "and salesperson.sID = ? ";
+
+        while (true) {
+            System.out.println("Enter the Part ID: ");
+            ans = menuAns.nextLine();
+            if (!ans.isEmpty())
+                break;
+        }
+        partID = ans;
+
+        while (true) {
+            System.out.print("Enter the Salesperson ID: ");
+            ans = menuAns.nextLine();
+            if (!ans.isEmpty())
+                break;
+        }
+        salespersonID = ans;
+
+        stmt = mySQLDB.prepareStatement(searchSQL);
+        stmt.setString(1, partID);
+        stmt.setString(2, salespersonID);
+
+        String[] field_name = { "ID", "Name", "Manufacturer", "Category", "Quantity", "Warranty", "Price" };
+        for (int i = 0; i < 7; i++) {
+            System.out.print("| " + field_name[i] + " ");
+        }
+        System.out.println("|");
+
+        ResultSet resultSet = stmt.executeQuery();
+        while (resultSet.next()) {
+            for (int i = 1; i <= 7; i++) {
+                System.out.print("| " + resultSet.getString(i) + " ");
+            }
+            System.out.println("|");
+        }
+        System.out.println("End of Query");
+        resultSet.close();
+        stmt.close();
+    }
+
+    // Sales Menu
     public static void salespersonMenu(Scanner menuAns, Connection mySQLDB) throws SQLException {
         String answer = "";
 
@@ -315,10 +439,10 @@ public class CSCI3170Project {
         }
 
         if (answer.equals("1")) {
-            sdListSalesperson(menuAns, mySQLDB);
+            searchParts(menuAns, mySQLDB);
         } else if (answer.equals("2")) {
-            searchSpacecrafts(menuAns, mySQLDB);
-        
+            sellPart(menuAns, mySQLDB);
+        }
     }
 
     /*
@@ -338,10 +462,18 @@ public class CSCI3170Project {
             System.out.print("Choose ordering:");
             System.out.print("1. By ascending order");
             System.out.print("2. By descending order");
-            System.out.print("Choose the list ordering");
+            System.out.print("Choose the list ordering: ");
             ordering = menuAns.nextLine();
             if (!ordering.isEmpty())
                 break;
+
+            if (ordering.equals("1")) {
+                ordering = "ASC";
+            } else if (ordering.equals("2")) {
+                ordering = "DESC";
+            } else {
+                System.out.println("[Error]: Wrong Input, Type in again!!!");
+            }
         }
 
         PreparedStatement stmt = mySQLDB.prepareStatement(selectSQL);
@@ -365,7 +497,7 @@ public class CSCI3170Project {
 
     // Man2
     public static void countTransaction(Scanner menuAns, Connection mySQLDB) throws SQLException {
-        String selectSQL = "select S.sID,S.sName,S.sExperience,Count(*) as from salesperson S, transaction T where S.sID=T.sID AND S.sExperience>=%d AND S.sExperience<=%d GROUP BY S.sID,S.sName,S.sExperience HAVING COUNT(*) > 1 ORDER BY S.sID DESC";
+        String selectSQL = "select S.sID,S.sName,S.sExperience,Count(*) as from salesperson S, transaction T where S.sID=T.sID AND S.sExperience>=%s AND S.sExperience<=%s GROUP BY S.sID,S.sName,S.sExperience HAVING COUNT(*) > 1 ORDER BY S.sID DESC";
         String start = null, end = null;
 
         while (true) {
@@ -422,6 +554,35 @@ public class CSCI3170Project {
         stmt.close();
     }
 
+    // Man4
+    public static void showParts(Scanner menuAns, Connection mySQLDB) throws SQLException {
+        String selectSQL = "select q.* from( select P.pID, P.pName, T.tID from part P, transaction T where P.pID = T.pID Order by T.tID by DESC) q where ROWNUM <= %s ORDER BY q.pID ASC";
+        String partnum = null;
+
+        while (true) {
+            System.out.print("Type in the number of parts: ");
+            partnum = menuAns.nextLine();
+            if (!partnum.isEmpty())
+                break;
+        }
+
+        PreparedStatement stmt = mySQLDB.prepareStatement(selectSQL);
+        stmt.setString(1, partnum);
+
+        ResultSet resultSet = stmt.executeQuery();
+
+        System.out.println("| Part ID | Part Name | No. of Transaction |");
+        while (resultSet.next()) {
+            for (int i = 1; i <= 3; i++) {
+                System.out.print("| " + resultSet.getString(i) + " ");
+            }
+            System.out.println("|");
+        }
+        System.out.println("...");
+        System.out.println("End of Query");
+        stmt.close();
+    }
+
     public static void managerMenu(Scanner menuAns, Connection mySQLDB) throws SQLException {
         String answer = "";
 
@@ -451,7 +612,7 @@ public class CSCI3170Project {
         } else if (answer.equals("3")) {
             showSalesValue(menuAns, mySQLDB);
         } else if (answer.equals("4")) {
-            showRentedOutAgency(menuAns, mySQLDB);
+            showParts(menuAns, mySQLDB);
         }
     }
 
