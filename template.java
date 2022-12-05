@@ -2,7 +2,7 @@ import java.util.*;
 import java.sql.*;
 import java.io.*;
 
-public class test {
+public class template {
 
     public static String dbAddress = "jdbc:mysql://projgw.cse.cuhk.edu.hk:2633/db5?autoReconnect=true&useSSL=false";
     // public static String dbAddress = "jdbc:mysql://localhost/csci3170";

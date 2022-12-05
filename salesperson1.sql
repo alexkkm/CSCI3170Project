@@ -13,3 +13,11 @@ where manufacturer.mName = 'Intel' /*change mName*/
 and part.cID = category.cID
 and manufacturer.mID = part.mID
 order by part.pPrice DESC; /*change SC*/
+
+
+select part.pID, part.pName, manufacturer.mName, category.cName, part.pAvailableQuantity, part.pWarrantyPeriod, part.pPrice
+from part, manufacturer, category
+where manufacturer.mName = 'Intel'
+and part.cID = category.cID
+and manufacturer.mID = part.mID
+order by part.pPrice DESC;
