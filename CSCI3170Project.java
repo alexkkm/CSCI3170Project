@@ -60,12 +60,6 @@ public class CSCI3170Project {
         Statement stmt = mySQLDB.createStatement();
         System.out.println("Processing...");
 
-        stmt.execute("DROP TABLE category");
-        stmt.execute("DROP TABLE manufacturer");
-        stmt.execute("DROP TABLE part");
-        stmt.execute("DROP TABLE salesperson");
-        stmt.execute("DROP TABLE transaction");
-
         System.err.println("Creating Category Table.");
         stmt.execute(categorySQL);
 
@@ -101,14 +95,13 @@ public class CSCI3170Project {
 
     public static void loadTables(Scanner menuAns, Connection mySQLDB) throws SQLException {
 
-        String categorySQL = "INSERT INTO Category (CategoryID, CategoryName) VALUES (?,?)";
-        String manufacturerSQL = "INSERT INTO Manufacturer (ManufacturerID, ManufacturerName, ManufacturerAddress, ManufacturerPhoneNumber) VALUES (?,?,?,?)";
-        String partSQL = "INSERT INTO Part (PartID, PartName, PartPrice, PartManufacturerID, PartCategoryID, PartWarranty, PartAvailableQuantity) VALUES (?,?,?,?,?,?,?)";
-        String salespersonSQL = "INSERT INTO Salesperson (SalespersonID, SalespersonName, SalespersonAddress, SalespersonPhoneNumber, SalespersonExperience) VALUES (?,?,?,?,?)";
-        String transactionSQL = "INSERT INTO Transaction (TransactionID, PartID, SalespersonID, TransactionDate) VALUES (?,?,?,STR_TO_DATE(?,'%d-%m-%Y'))";
+        String categorySQL = "INSERT INTO Category (cID, cName) VALUES (?,?)";
+        String manufacturerSQL = "INSERT INTO Manufacturer (mID, mName, mAddress, mPhoneNumber) VALUES (?,?,?,?)";
+        String partSQL = "INSERT INTO Part (pID, pName, pPrice, mID, cID, pWarrantyPeriod, pAvailableQuantity) VALUES (?,?,?,?,?,?,?)";
+        String salespersonSQL = "INSERT INTO Salesperson (sID, sName, sAddress, sPhoneNumber, sExperience) VALUES (?,?,?,?,?)";
+        String transactionSQL = "INSERT INTO Transaction (tID, pID, sID, tnDate) VALUES (?,?,?,STR_TO_DATE(?,'%d-%m-%Y'))";
 
         String filePath = "";
-        String targetTable = "";
 
         while (true) {
             System.out.println("");
